@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — German Prep{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-slide-up">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-display font-bold text-white">{{ greeting }}</h1>
+            <p class="text-slate-400 mt-1">
+                Week <span class="text-brand-400 font-bold">{{ week }}</span> of 12 —
+                <span class="text-slate-300">{{ phase.name_de }}</span>
+            </p>
+        </div>
+
+        <!-- Exam countdown -->
+        {% if days_until_exam is not none %}
+        <div class="card-glow rounded-2xl px-5 py-3 text-center">
+            <div class="text-3xl font-display font-bold {% if days_until_exam <= 7 %}text-red-400{% elif days_until_exam <= 21 %}text-brand-400{% else %}text-emerald-400{% endif %}">
+                {{ days_until_exam }}
+            </div>
+            <div class="text-xs text-slate-500 uppercase tracking-wider">Tage bis zur Prüfung</div>
+        </div>
+        {% else %}
+        <div x-data="{ showDatePicker: false, examDate: '' }" class="card-glow rounded-2xl px-5 py-3 text-center">
+            <div x-show="!showDatePicker">
+                <button @click="showDatePicker = true" class="text-sm text-brand-400 hover:text-brand-300 font-medium">
+                    📅 Set exam date
+                </button>
+            </div>
+            <div x-show="showDatePicker" x-transition class="flex gap-2 items-center">
+                <input type="date" x-model="examDate"
+                       class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:border-brand-400 focus:outline-none">
+                <button @click="fetch('/api/settings', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({exam_date: examDate})}).then(() => location.reload())"
+                        class="bg-brand-500 text-slate-900 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-brand-400 transition-colors">
+                    Set
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Level & Streak bar -->
+    <div class="card-glow rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl">{{ streak_emoji }}</div>
+                <div>
+                    <div class="text-sm text-slate-400">Streak: <span class="text-brand-400 font-bold text-lg">{{ streak }}</span> {% if streak == 1 %}Tag{% else %}Tage{% endif %}</div>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-sm text-slate-400">Level: <span class="text-purple-400 font-bold">{{ level.level_name_de }}</span></div>
+                <div class="text-xs text-slate-500">{{ level.xp }} XP {% if level.next_level_xp %}/ {{ level.next_level_xp }} XP{% endif %}</div>
+            </div>
+        </div>
+        <!-- XP Progress bar -->
+        <div class="w-full bg-slate-700 rounded-full h-2.5">
+            <div class="bg-gradient-to-r from-brand-500 to-purple-500 h-2.5 rounded-full progress-bar-fill"
+                 style="width: {{ level.progress }}%"></div>
+        </div>
+    </div>
+
+    <!-- Today's Focus -->
+    <div class="card-glow rounded-2xl p-6 border-l-4 border-brand-500">
+        <h2 class="font-display font-bold text-lg text-white mb-2">📋 Heutiger Fokus</h2>
+        <p class="text-slate-300">{{ phase.daily_routine }}</p>
+        <div class="mt-4">
+            <a href="/sprachbausteine"
+               class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-amber-500 text-slate-900 font-bold px-6 py-3 rounded-xl hover:from-brand-400 hover:to-amber-400 transition-all hover:shadow-lg hover:shadow-brand-500/25 active:scale-95">
+                🚀 Los geht's!
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Today's Activity -->
+        <div class="card-glow rounded-2xl p-5">
+            <h3 class="text-sm text-slate-500 uppercase tracking-wider mb-3">Heute</h3>
+            {% if today_activity %}
+            <div class="text-3xl font-display font-bold text-white">{{ today_activity.exercises_completed }}</div>
+            <div class="text-sm text-slate-400">Übungen gemacht</div>
+            {% if today_activity.exercises_completed > 0 %}
+            <div class="mt-2 text-sm">
+                <span class="text-emerald-400 font-bold">{{ ((today_activity.correct_answers / today_activity.exercises_completed) * 100)|round|int }}%</span>
+                <span class="text-slate-500">richtig</span>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-3xl font-display font-bold text-slate-600">0</div>
+            <div class="text-sm text-slate-500">Noch nichts gemacht — los!</div>
+            {% endif %}
+        </div>
+
+        <!-- Sprachbausteine Stats (clickable) -->
+        <a href="/sprachbausteine" class="card-glow rounded-2xl p-5 hover:border-brand-500/40 transition-all group cursor-pointer block">
+            <h3 class="text-sm text-slate-500 uppercase tracking-wider mb-3 group-hover:text-brand-400 transition-colors">🧩 Sprachbausteine</h3>
+            <div class="text-3xl font-display font-bold {% if sb_stats.accuracy >= 70 %}text-emerald-400{% elif sb_stats.accuracy >= 50 %}text-brand-400{% else %}text-slate-400{% endif %}">
+                {{ sb_stats.accuracy }}%
+            </div>
+            <div class="text-sm text-slate-400">Genauigkeit ({{ sb_stats.correct }}/{{ sb_stats.total }})</div>
+            {% if sb_stats.total > 0 %}
+            <div class="w-full bg-slate-700 rounded-full h-1.5 mt-2">
+                <div class="bg-emerald-500 h-1.5 rounded-full progress-bar-fill" style="width: {{ sb_stats.accuracy }}%"></div>
+            </div>
+            {% endif %}
+        </a>
+
+        <!-- Week Progress -->
+        <div class="card-glow rounded-2xl p-5">
+            <h3 class="text-sm text-slate-500 uppercase tracking-wider mb-3">📈 Fortschritt</h3>
+            <div class="text-3xl font-display font-bold text-white">{{ week }}<span class="text-lg text-slate-500">/12</span></div>
+            <div class="text-sm text-slate-400">Wochen</div>
+            <div class="w-full bg-slate-700 rounded-full h-1.5 mt-2">
+                <div class="bg-purple-500 h-1.5 rounded-full progress-bar-fill" style="width: {{ (week / 12 * 100)|round|int }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module Quick Access -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <a href="/sprachbausteine" class="card-glow rounded-2xl p-4 text-center hover:border-brand-500/40 transition-all group cursor-pointer block">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🧩</div>
+            <div class="text-sm font-bold text-slate-300 group-hover:text-brand-400 transition-colors">Sprachbausteine</div>
+            <div class="text-xs text-slate-600 mt-1">Grammar drills</div>
+        </a>
+        <a href="/vocabulary" class="card-glow rounded-2xl p-4 text-center hover:border-brand-500/40 transition-all group cursor-pointer block">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">📝</div>
+            <div class="text-sm font-bold text-slate-300 group-hover:text-brand-400 transition-colors">Wortschatz</div>
+            <div class="text-xs text-slate-600 mt-1">Flashcards & Anki</div>
+        </a>
+        <a href="/writing" class="card-glow rounded-2xl p-4 text-center hover:border-brand-500/40 transition-all group cursor-pointer block">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">✍️</div>
+            <div class="text-sm font-bold text-slate-300 group-hover:text-brand-400 transition-colors">Schreiben</div>
+            <div class="text-xs text-slate-600 mt-1">Email practice</div>
+        </a>
+        <a href="/speaking" class="card-glow rounded-2xl p-4 text-center hover:border-brand-500/40 transition-all group cursor-pointer block">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🗣️</div>
+            <div class="text-sm font-bold text-slate-300 group-hover:text-brand-400 transition-colors">Sprechen</div>
+            <div class="text-xs text-slate-600 mt-1">Speaking practice</div>
+        </a>
+    </div>
+
+    <!-- Weak Areas (only show if user has practiced) -->
+    {% if weak_areas %}
+    <div class="card-glow rounded-2xl p-5 border-l-4 border-red-500/50">
+        <div class="flex items-start gap-3 mb-4">
+            <div class="text-2xl">⚠️</div>
+            <div>
+                <h3 class="text-sm text-slate-500 uppercase tracking-wider">Focus Areas</h3>
+                <p class="text-slate-400 text-xs mt-1">Grammar types below 65% accuracy (need drilling)</p>
+            </div>
+        </div>
+        <div class="space-y-2">
+            {% for area in weak_areas[:5] %}
+            <a href="/sprachbausteine" 
+               class="flex items-center justify-between p-3 rounded-lg bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 hover:border-red-500/30 transition-all group">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                    <div>
+                        <div class="text-sm font-medium text-slate-200 group-hover:text-red-300 transition-colors">{{ area.label }}</div>
+                        <div class="text-xs text-slate-500">{{ area.total }} attempts</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-lg font-bold text-red-400">{{ area.accuracy }}%</div>
+                    <svg class="w-4 h-4 text-slate-600 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-slate-600 mt-3 text-center">💡 Use type filters in Sprachbausteine to drill these areas</p>
+    </div>
+    {% endif %}
+
+    <!-- Checkpoints -->
+    <div class="card-glow rounded-2xl p-5">
+        <h3 class="text-sm text-slate-500 uppercase tracking-wider mb-4">🏁 Exam Readiness Checkpoints</h3>
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 rounded-xl p-4 {{ 'bg-brand-500/10 border border-brand-500/30' if week >= 8 else 'bg-slate-800/50 border border-slate-700/50' }}">
+                <div class="text-sm font-bold {{ 'text-brand-400' if week >= 8 else 'text-slate-500' }}">Checkpoint 1</div>
+                <div class="text-xs {{ 'text-slate-300' if week >= 8 else 'text-slate-600' }}">Week 8 — Score 70%+ → go for it</div>
+            </div>
+            <div class="flex-1 rounded-xl p-4 {{ 'bg-brand-500/10 border border-brand-500/30' if week >= 10 else 'bg-slate-800/50 border border-slate-700/50' }}">
+                <div class="text-sm font-bold {{ 'text-brand-400' if week >= 10 else 'text-slate-500' }}">Checkpoint 2</div>
+                <div class="text-xs {{ 'text-slate-300' if week >= 10 else 'text-slate-600' }}">Week 10 — Score 65%+ → comfortable pass</div>
+            </div>
+            <div class="flex-1 rounded-xl p-4 {{ 'bg-brand-500/10 border border-brand-500/30' if week >= 12 else 'bg-slate-800/50 border border-slate-700/50' }}">
+                <div class="text-sm font-bold {{ 'text-brand-400' if week >= 12 else 'text-slate-500' }}">Checkpoint 3</div>
+                <div class="text-xs {{ 'text-slate-300' if week >= 12 else 'text-slate-600' }}">Week 12 — Maximum confidence</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fun Fact -->
+    <div class="card-glow rounded-2xl p-5">
+        <div class="flex items-start gap-3">
+            <div class="text-2xl">💡</div>
+            <div>
+                <h3 class="text-sm text-slate-500 uppercase tracking-wider mb-1">Wusstest du?</h3>
+                <p class="text-slate-300 text-sm leading-relaxed">{{ fun_fact }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

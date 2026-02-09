@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}German B1 Practice App{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shake': 'shake 0.5s ease-in-out',
+                        'confetti': 'confetti 1s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-8px)' },
+                            '75%': { transform: 'translateX(8px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(245, 158, 11, 0.3)' },
+                            '100%': { boxShadow: '0 0 20px rgba(245, 158, 11, 0.6)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+        }
+
+        .card-glow {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .card-glow:hover {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .option-correct {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: rgb(16, 185, 129) !important;
+            color: rgb(167, 243, 208) !important;
+        }
+
+        .option-wrong {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgb(239, 68, 68) !important;
+            color: rgb(254, 202, 202) !important;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .progress-bar-fill {
+            transition: width 0.5s ease-out;
+        }
+
+        /* Confetti */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* Music player */
+        .music-widget {
+            transition: all 0.3s ease;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Loading shimmer */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="text-slate-200 font-sans" x-data="baseApp()" x-cloak>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-3 group" @click="logoClicks++" >
+                    <div class="text-2xl group-hover:animate-bounce">🇩🇪</div>
+                    <div>
+                        <span class="font-display font-bold text-brand-400 text-lg tracking-tight">German Prep</span>
+                        <span class="text-xs text-slate-500 block -mt-1" x-text="loadingMessages[currentLoadingMsg]"></span>
+                    </div>
+                </a>
+
+                <!-- Nav links -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-brand-400 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'dashboard' else 'text-slate-400' }}">
+                        📊 Dashboard
+                    </a>
+                    <a href="/sprachbausteine" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-brand-400 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'sprachbausteine' else 'text-slate-400' }}">
+                        🧩 Sprachbausteine
+                    </a>
+                    <a href="/vocabulary" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-brand-400 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'vocabulary' else 'text-slate-400' }}">
+                        📝 Wortschatz
+                    </a>
+                    <a href="/writing" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-brand-400 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'writing' else 'text-slate-400' }}">
+                        ✍️ Schreiben
+                    </a>
+                    <a href="/speaking" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-brand-400 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'speaking' else 'text-slate-400' }}">
+                        🗣️ Sprechen
+                    </a>
+                </div>
+
+                <!-- XP & Streak + Mobile toggle -->
+                <div class="flex items-center gap-4">
+                    <div class="text-sm text-slate-400 hidden sm:block" x-show="streak > 0">
+                        <span x-text="streakEmoji"></span>
+                        <span x-text="streak" class="font-bold text-brand-400"></span> day streak
+                    </div>
+                    <div class="hidden sm:flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1">
+                        <span class="text-brand-400 text-sm font-bold" x-text="xp + ' XP'"></span>
+                    </div>
+                    <!-- Mobile hamburger -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <svg x-show="!mobileMenuOpen" class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg x-show="mobileMenuOpen" x-cloak class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile nav dropdown -->
+            <div x-show="mobileMenuOpen" x-transition x-cloak class="md:hidden border-t border-slate-700/50 pb-3 pt-2">
+                <div class="flex flex-col gap-1">
+                    <a href="/" class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'dashboard' else 'text-slate-400' }}">📊 Dashboard</a>
+                    <a href="/sprachbausteine" class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'sprachbausteine' else 'text-slate-400' }}">🧩 Sprachbausteine</a>
+                    <a href="/vocabulary" class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'vocabulary' else 'text-slate-400' }}">📝 Wortschatz</a>
+                    <a href="/writing" class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'writing' else 'text-slate-400' }}">✍️ Schreiben</a>
+                    <a href="/speaking" class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors {{ 'text-brand-400 bg-slate-800' if request.endpoint == 'speaking' else 'text-slate-400' }}">🗣️ Sprechen</a>
+                </div>
+                <div class="flex items-center justify-between px-3 pt-3 mt-2 border-t border-slate-700/50">
+                    <div class="text-sm text-slate-400" x-show="streak > 0">
+                        <span x-text="streakEmoji"></span>
+                        <span x-text="streak" class="font-bold text-brand-400"></span> day streak
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1">
+                        <span class="text-brand-400 text-sm font-bold" x-text="xp + ' XP'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Easter egg: tongue twister popup -->
+    <div x-show="showTongueTwister" x-transition
+         class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-purple-900/90 border border-purple-500/50 rounded-xl p-4 max-w-md text-center backdrop-blur-md"
+         @click.away="showTongueTwister = false">
+        <p class="text-purple-200 text-sm mb-1">🎯 Zungenbrecher (Tongue Twister):</p>
+        <p class="text-white font-bold text-lg" x-text="currentTongueTwister"></p>
+        <p class="text-purple-300 text-xs mt-2">Try saying it 3 times fast! Click anywhere to dismiss.</p>
+    </div>
+
+    <!-- Achievement toast -->
+    <div x-show="showAchievement" x-transition.opacity
+         class="fixed top-20 right-4 z-50 bg-gradient-to-r from-brand-600 to-amber-600 rounded-xl p-4 max-w-sm shadow-2xl shadow-brand-500/20">
+        <p class="text-white font-bold text-lg" x-text="achievementName"></p>
+        <p class="text-amber-100 text-sm" x-text="achievementDesc"></p>
+    </div>
+
+    <!-- Main content -->
+    <main class="pt-20 pb-24 min-h-screen">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Music Player Widget -->
+    <div class="fixed bottom-4 right-4 z-40 music-widget" x-data="musicPlayer()">
+        <!-- Collapsed state -->
+        <button x-show="!isOpen" @click="isOpen = true"
+                class="bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-full p-3 hover:bg-slate-700 hover:border-brand-500/50 transition-all shadow-lg group">
+            <span class="text-xl group-hover:animate-bounce">🎵</span>
+        </button>
+
+        <!-- Expanded player -->
+        <div x-show="isOpen" x-transition
+             class="bg-slate-800/95 backdrop-blur-md border border-slate-700 rounded-2xl p-4 w-80 shadow-2xl">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-brand-400 font-display">🎧 Focus Music</h3>
+                <button @click="isOpen = false" class="text-slate-500 hover:text-slate-300 text-lg">&times;</button>
+            </div>
+
+            <!-- Station selector -->
+            <div class="flex gap-1 mb-3">
+                <template x-for="(station, idx) in stations" :key="idx">
+                    <button @click="selectStation(idx)"
+                            :class="currentStation === idx ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-700/50 border-slate-600 text-slate-400'"
+                            class="flex-1 text-xs py-1.5 px-2 rounded-lg border transition-all hover:border-brand-500/50"
+                            x-text="station.emoji + ' ' + station.name">
+                    </button>
+                </template>
+            </div>
+
+            <!-- YouTube embed -->
+            <div class="rounded-lg overflow-hidden bg-slate-900" :class="currentStation === 3 ? 'hidden' : ''">
+                <iframe :src="stations[currentStation].url"
+                        width="100%" height="60"
+                        frameborder="0"
+                        allow="autoplay; encrypted-media"
+                        allowfullscreen
+                        class="rounded-lg">
+                </iframe>
+            </div>
+
+            <!-- Silence mode -->
+            <div x-show="currentStation === 3" class="text-center py-4 text-slate-500 text-sm">
+                🤫 Silence is golden. Focus mode.
+            </div>
+
+            <p class="text-slate-600 text-xs mt-2 text-center">Music helps you study 23% longer (probably)</p>
+        </div>
+    </div>
+
+    <!-- Konami Code listener (global) -->
+    <script>
+        // Base app state
+        function baseApp() {
+            return {
+                streak: {{ streak|default(0) }},
+                streakEmoji: '{{ streak_emoji|default("🌱") }}',
+                xp: {{ (level.xp if level is defined else 0)|default(0) }},
+                logoClicks: 0,
+                mobileMenuOpen: false,
+                showTongueTwister: false,
+                currentTongueTwister: '',
+                showAchievement: false,
+                achievementName: '',
+                achievementDesc: '',
+                currentLoadingMsg: 0,
+                loadingMessages: [
+                    'Umlauts loaded ✓',
+                    'der/die/das randomizer ready',
+                    'Konjunktiv II warmed up',
+                    'Dativ detected',
+                    'Akkusativ activated',
+                    'Bratwurst.exe running',
+                    'Loading German precision...',
+                    'Ordnung muss sein!',
+                ],
+                tongueTwisters: [
+                    'Fischers Fritz fischt frische Fische, frische Fische fischt Fischers Fritz.',
+                    'Blaukraut bleibt Blaukraut und Brautkleid bleibt Brautkleid.',
+                    'Zwischen zwei Zwetschgenzweigen zwitschern zwei Schwalben.',
+                    'Der Potsdamer Postkutscher putzt den Potsdamer Postkutschkasten.',
+                    'Wenn Fliegen hinter Fliegen fliegen, fliegen Fliegen Fliegen nach.',
+                ],
+                init() {
+                    // Rotate loading messages
+                    this.currentLoadingMsg = Math.floor(Math.random() * this.loadingMessages.length);
+                    setInterval(() => {
+                        this.currentLoadingMsg = (this.currentLoadingMsg + 1) % this.loadingMessages.length;
+                    }, 4000);
+
+                    // Easter egg: logo click
+                    this.$watch('logoClicks', (val) => {
+                        if (val >= 5) {
+                            this.logoClicks = 0;
+                            this.currentTongueTwister = this.tongueTwisters[Math.floor(Math.random() * this.tongueTwisters.length)];
+                            this.showTongueTwister = true;
+                            setTimeout(() => this.showTongueTwister = false, 6000);
+                        }
+                    });
+
+                    // Konami code easter egg
+                    let konamiSequence = [];
+                    const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+                    document.addEventListener('keydown', (e) => {
+                        konamiSequence.push(e.keyCode);
+                        if (konamiSequence.length > konamiCode.length) {
+                            konamiSequence.shift();
+                        }
+                        if (JSON.stringify(konamiSequence) === JSON.stringify(konamiCode)) {
+                            this.triggerAchievement('🌭 KONAMI WURST!', 'Du bist ein echter Hacker! (↑↑↓↓←→←→BA)');
+                            this.launchConfetti();
+                        }
+                    });
+                },
+                triggerAchievement(name, desc) {
+                    this.achievementName = name;
+                    this.achievementDesc = desc;
+                    this.showAchievement = true;
+                    setTimeout(() => this.showAchievement = false, 4000);
+                },
+                launchConfetti() {
+                    const colors = ['#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#3b82f6', '#ec4899'];
+                    for (let i = 0; i < 50; i++) {
+                        const piece = document.createElement('div');
+                        piece.className = 'confetti-piece';
+                        piece.style.left = Math.random() * 100 + 'vw';
+                        piece.style.top = '-10px';
+                        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                        document.body.appendChild(piece);
+
+                        const duration = 1000 + Math.random() * 2000;
+                        piece.animate([
+                            { top: '-10px', opacity: 1 },
+                            { top: '100vh', opacity: 0 }
+                        ], {
+                            duration: duration,
+                            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                        }).onfinish = () => piece.remove();
+                    }
+                },
+                updateXP(newXP) {
+                    this.xp = newXP;
+                }
+            };
+        }
+
+        // Music player
+        function musicPlayer() {
+            return {
+                isOpen: false,
+                currentStation: 0,
+                stations: [
+                    { name: 'Lo-fi', emoji: '🎵', url: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&controls=1&modestbranding=1' },
+                    { name: 'Classical', emoji: '🎻', url: 'https://www.youtube.com/embed/4oGwBFnMzAI?autoplay=0&controls=1&modestbranding=1' },
+                    { name: 'Rain', emoji: '🌧️', url: 'https://www.youtube.com/embed/mPZkdNFkNps?autoplay=0&controls=1&modestbranding=1' },
+                    { name: 'Silence', emoji: '🤫', url: '' },
+                ],
+                selectStation(idx) {
+                    this.currentStation = idx;
+                }
+            };
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

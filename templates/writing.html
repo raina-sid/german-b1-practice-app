@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Schreiben — German Prep{% endblock %}
+
+{% block content %}
+<div x-data="writingApp()" class="max-w-3xl mx-auto space-y-6 animate-slide-up">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-display font-bold text-white">✍️ Schreiben (Writing)</h1>
+            <p class="text-slate-400 text-sm mt-1">Practice email responses — the most template-able section of the exam</p>
+        </div>
+        <div class="text-sm text-slate-500">
+            <span x-text="currentPromptIndex + 1"></span> / <span x-text="prompts.length"></span>
+        </div>
+    </div>
+
+    <!-- Prompt Card -->
+    <div class="card-glow rounded-2xl p-6">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full border border-purple-500/30"
+                  x-text="currentPrompt.type"></span>
+            <span class="text-xs text-slate-500" x-text="currentPrompt.register === 'formal' ? '(Sie)' : '(du)'"></span>
+        </div>
+
+        <p class="text-slate-200 mb-4" x-text="currentPrompt.situation"></p>
+
+        <div class="space-y-2">
+            <p class="text-xs text-slate-500 uppercase tracking-wider">Schreiben Sie über diese Punkte:</p>
+            <template x-for="(point, idx) in currentPrompt.points" :key="idx">
+                <div class="flex items-start gap-2 text-sm">
+                    <span class="text-brand-400 font-bold mt-0.5" x-text="(idx + 1) + '.'"></span>
+                    <span class="text-slate-300" x-text="point"></span>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Writing Area -->
+    <div class="card-glow rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-400">Ihre Antwort:</h3>
+            <div class="flex items-center gap-3">
+                <span class="text-xs" :class="wordCount >= 100 && wordCount <= 150 ? 'text-emerald-400' : wordCount > 150 ? 'text-red-400' : 'text-slate-500'">
+                    <span x-text="wordCount"></span> Wörter
+                    <span class="text-slate-600">(Ziel: 100-150)</span>
+                </span>
+                <!-- Timer -->
+                <span class="text-xs text-slate-500 font-mono" x-text="formatTime(timerSeconds)"></span>
+            </div>
+        </div>
+
+        <textarea x-model="emailText" @input="updateWordCount()"
+                  class="w-full h-64 bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-slate-200 text-sm leading-relaxed focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/50 resize-none font-sans"
+                  placeholder="Liebe/r ... / Sehr geehrte/r ..."></textarea>
+
+        <!-- Checklist -->
+        <div class="mt-4 space-y-2">
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">✅ Self-Check (before submitting on exam day):</p>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.greeting" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.greeting ? 'text-emerald-400' : ''">Correct greeting (Lieber/Sehr geehrte/r)?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.point1" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.point1 ? 'text-emerald-400' : ''">Point 1 addressed?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.point2" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.point2 ? 'text-emerald-400' : ''">Point 2 addressed?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.point3" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.point3 ? 'text-emerald-400' : ''">Point 3 addressed?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.point4" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.point4 ? 'text-emerald-400' : ''">Point 4 addressed?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.closing" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.closing ? 'text-emerald-400' : ''">Closing sentence + sign-off?</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                <input type="checkbox" x-model="checks.wordcount" class="rounded border-slate-600 bg-slate-800 text-brand-500 focus:ring-brand-500">
+                <span :class="checks.wordcount ? 'text-emerald-400' : ''">Word count: 100-150?</span>
+            </label>
+        </div>
+
+        <div class="flex justify-between mt-4">
+            <button @click="clearEmail()" class="text-sm text-slate-500 hover:text-slate-300">Clear</button>
+            <button @click="nextPrompt()" class="bg-brand-500 text-slate-900 font-bold px-5 py-2 rounded-xl hover:bg-brand-400 transition-all">
+                Next Prompt →
+            </button>
+        </div>
+    </div>
+
+    <!-- Redemittel Panel (collapsible) -->
+    <div x-data="{ open: false }" class="card-glow rounded-2xl overflow-hidden">
+        <button @click="open = !open" class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+            <h3 class="font-display font-bold text-brand-400">📚 Redemittel (Useful Phrases)</h3>
+            <span class="text-slate-500 text-xl" x-text="open ? '−' : '+'"></span>
+        </button>
+        <div x-show="open" x-transition class="px-4 pb-4 space-y-4">
+            {% for category, phrases in prompts.redemittel.items() %}
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">{{ category.replace('_', ' ').title() }}</p>
+                <div class="flex flex-wrap gap-2">
+                    {% for phrase in phrases %}
+                    <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 cursor-pointer hover:border-brand-500/50 hover:text-brand-400 transition-colors"
+                          onclick="navigator.clipboard.writeText('{{ phrase }}')">
+                        {{ phrase }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            <p class="text-xs text-slate-600 text-center">Click a phrase to copy it to clipboard</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function writingApp() {
+    return {
+        prompts: {{ prompts.prompts | tojson }},
+        currentPromptIndex: 0,
+        emailText: '',
+        wordCount: 0,
+        timerSeconds: 0,
+        timerInterval: null,
+        checks: { greeting: false, point1: false, point2: false, point3: false, point4: false, closing: false, wordcount: false },
+
+        get currentPrompt() { return this.prompts[this.currentPromptIndex]; },
+
+        init() {
+            this.timerInterval = setInterval(() => this.timerSeconds++, 1000);
+            // Shuffle prompts
+            this.prompts.sort(() => Math.random() - 0.5);
+        },
+
+        updateWordCount() {
+            this.wordCount = this.emailText.trim() ? this.emailText.trim().split(/\s+/).length : 0;
+        },
+
+        formatTime(s) {
+            const m = Math.floor(s / 60).toString().padStart(2, '0');
+            const sec = (s % 60).toString().padStart(2, '0');
+            return `${m}:${sec}`;
+        },
+
+        clearEmail() {
+            this.emailText = '';
+            this.wordCount = 0;
+            this.checks = { greeting: false, point1: false, point2: false, point3: false, point4: false, closing: false, wordcount: false };
+        },
+
+        nextPrompt() {
+            this.currentPromptIndex = (this.currentPromptIndex + 1) % this.prompts.length;
+            this.clearEmail();
+            this.timerSeconds = 0;
+        },
+    };
+}
+</script>
+{% endblock %}

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}Sprechen — German Prep{% endblock %}
+
+{% block content %}
+<div x-data="speakingApp()" class="max-w-3xl mx-auto space-y-6 animate-slide-up">
+
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-display font-bold text-white">🗣️ Sprechen (Speaking)</h1>
+        <p class="text-slate-400 text-sm mt-1">Practice all 3 speaking parts — memorize the skeleton, swap the content</p>
+    </div>
+
+    <!-- Part Selector -->
+    <div class="flex gap-2">
+        <button @click="selectPart(1)" :class="currentPart === 1 ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                class="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all hover:border-brand-500/50">
+            Teil 1<br><span class="text-xs opacity-70">Kontaktaufnahme</span>
+        </button>
+        <button @click="selectPart(2)" :class="currentPart === 2 ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                class="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all hover:border-brand-500/50">
+            Teil 2<br><span class="text-xs opacity-70">Über ein Thema sprechen</span>
+        </button>
+        <button @click="selectPart(3)" :class="currentPart === 3 ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                class="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all hover:border-brand-500/50">
+            Teil 3<br><span class="text-xs opacity-70">Gemeinsam planen</span>
+        </button>
+    </div>
+
+    <!-- TEIL 1: Kontaktaufnahme -->
+    <div x-show="currentPart === 1" x-transition class="space-y-4">
+        <div class="card-glow rounded-2xl p-6">
+            <h3 class="font-display font-bold text-lg text-white mb-1">Teil 1: Kontaktaufnahme</h3>
+            <p class="text-slate-400 text-sm mb-4">Introduce yourself. This is FREE POINTS — memorize your personal script!</p>
+            <p class="text-xs text-brand-400 mb-4">⏱️ Target: ~2 minutes</p>
+
+            <div class="space-y-3">
+                {% for i in range(data.teil1_script.questions|length) %}
+                <div class="bg-slate-800/50 rounded-xl p-4">
+                    <p class="text-sm text-slate-400 mb-1">{{ data.teil1_script.questions[i] }}</p>
+                    <p class="text-brand-300 text-sm font-medium">{{ data.teil1_script.templates[i] }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                <p class="text-emerald-400 text-sm font-bold">💡 Hack: Fill in YOUR answers and practice saying them until they're automatic. Same script every exam!</p>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="card-glow rounded-2xl p-4 flex items-center justify-between">
+            <span class="text-slate-400 text-sm">Practice timer:</span>
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-display font-bold text-white font-mono" x-text="formatTime(speakingTimer)"></span>
+                <button @click="toggleTimer()" :class="timerRunning ? 'bg-red-500 hover:bg-red-400' : 'bg-emerald-500 hover:bg-emerald-400'"
+                        class="text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+                        x-text="timerRunning ? 'Stop' : 'Start'"></button>
+                <button @click="resetTimer()" class="text-slate-500 hover:text-slate-300 text-sm">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEIL 2: Über ein Thema sprechen -->
+    <div x-show="currentPart === 2" x-transition class="space-y-4">
+        <div class="card-glow rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white mb-1">Teil 2: Über ein Thema sprechen</h3>
+                    <p class="text-slate-400 text-sm">Present a topic for ~4 minutes using the skeleton structure</p>
+                </div>
+                <button @click="nextTeil2Topic()" class="text-sm text-brand-400 hover:text-brand-300 font-medium">
+                    🔄 New Topic
+                </button>
+            </div>
+
+            <!-- Topic -->
+            <div class="bg-gradient-to-r from-purple-500/10 to-brand-500/10 border border-purple-500/20 rounded-xl p-5 mb-4">
+                <p class="text-xs text-purple-400 uppercase tracking-wider mb-1">Thema:</p>
+                <p class="text-xl font-display font-bold text-white" x-text="currentTeil2.topic"></p>
+            </div>
+
+            <!-- Guiding points -->
+            <div class="space-y-2 mb-4">
+                <template x-for="(point, idx) in currentTeil2.points" :key="idx">
+                    <div class="flex items-start gap-2 text-sm">
+                        <span class="text-brand-400 font-bold mt-0.5" x-text="(idx + 1) + '.'"></span>
+                        <span class="text-slate-300" x-text="point"></span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Skeleton -->
+            <div class="bg-slate-800/50 rounded-xl p-4 space-y-3">
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">📏 Your Skeleton (fill in the blanks):</p>
+                <div class="space-y-2 text-sm">
+                    <p class="text-purple-300"><span class="text-purple-500">1.</span> "Das Thema meiner Präsentation ist <span class="text-brand-400">[topic]</span>. Das ist ein wichtiges Thema, weil..."</p>
+                    <p class="text-purple-300"><span class="text-purple-500">2.</span> "Ich persönlich habe die Erfahrung gemacht, dass..."</p>
+                    <p class="text-purple-300"><span class="text-purple-500">3.</span> "Ein Vorteil von <span class="text-brand-400">[topic]</span> ist, dass... Außerdem..."</p>
+                    <p class="text-purple-300"><span class="text-purple-500">4.</span> "Andererseits gibt es auch Nachteile. Zum Beispiel..."</p>
+                    <p class="text-purple-300"><span class="text-purple-500">5.</span> "In meinem Heimatland ist die Situation so, dass..."</p>
+                    <p class="text-purple-300"><span class="text-purple-500">6.</span> "Zusammenfassend möchte ich sagen, dass... Vielen Dank."</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="card-glow rounded-2xl p-4 flex items-center justify-between">
+            <div class="text-sm">
+                <span class="text-slate-400">Prep:</span>
+                <span class="text-slate-500">20 min on exam</span>
+                <span class="text-slate-600 mx-2">|</span>
+                <span class="text-slate-400">Speaking:</span>
+                <span class="text-slate-500">3-4 min</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-display font-bold text-white font-mono" x-text="formatTime(speakingTimer)"></span>
+                <button @click="toggleTimer()" :class="timerRunning ? 'bg-red-500 hover:bg-red-400' : 'bg-emerald-500 hover:bg-emerald-400'"
+                        class="text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+                        x-text="timerRunning ? 'Stop' : 'Start'"></button>
+                <button @click="resetTimer()" class="text-slate-500 hover:text-slate-300 text-sm">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEIL 3: Gemeinsam planen -->
+    <div x-show="currentPart === 3" x-transition class="space-y-4">
+        <div class="card-glow rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white mb-1">Teil 3: Gemeinsam etwas planen</h3>
+                    <p class="text-slate-400 text-sm">Plan something with your partner using these key phrases</p>
+                </div>
+                <button @click="nextTeil3Scenario()" class="text-sm text-brand-400 hover:text-brand-300 font-medium">
+                    🔄 New Scenario
+                </button>
+            </div>
+
+            <!-- Scenario -->
+            <div class="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-xl p-5 mb-4">
+                <p class="text-xs text-emerald-400 uppercase tracking-wider mb-1">Aufgabe:</p>
+                <p class="text-lg text-white font-medium" x-text="currentTeil3.scenario"></p>
+            </div>
+
+            <!-- Planning points -->
+            <div class="space-y-2 mb-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wider">Besprechen Sie:</p>
+                <template x-for="(point, idx) in currentTeil3.points" :key="idx">
+                    <div class="flex items-start gap-2 text-sm">
+                        <span class="text-emerald-400 font-bold mt-0.5">•</span>
+                        <span class="text-slate-300" x-text="point"></span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Key phrases -->
+            <div class="bg-slate-800/50 rounded-xl p-4 space-y-3">
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">🗝️ Key Phrases to Use:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                    <div class="text-teal-300">"Ich schlage vor, dass wir..."</div>
+                    <div class="text-teal-300">"Was meinst du?"</div>
+                    <div class="text-teal-300">"Wie wäre es, wenn wir...?"</div>
+                    <div class="text-teal-300">"Einverstanden!"</div>
+                    <div class="text-teal-300">"Gute Idee, aber vielleicht..."</div>
+                    <div class="text-teal-300">"Wir könnten auch..."</div>
+                    <div class="text-teal-300">"Wer ist dafür verantwortlich?"</div>
+                    <div class="text-teal-300">"Dann machen wir das so!"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="card-glow rounded-2xl p-4 flex items-center justify-between">
+            <span class="text-slate-400 text-sm">Planning discussion: ~5 min</span>
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-display font-bold text-white font-mono" x-text="formatTime(speakingTimer)"></span>
+                <button @click="toggleTimer()" :class="timerRunning ? 'bg-red-500 hover:bg-red-400' : 'bg-emerald-500 hover:bg-emerald-400'"
+                        class="text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+                        x-text="timerRunning ? 'Stop' : 'Start'"></button>
+                <button @click="resetTimer()" class="text-slate-500 hover:text-slate-300 text-sm">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redemittel (collapsible) -->
+    <div x-data="{ open: false }" class="card-glow rounded-2xl overflow-hidden">
+        <button @click="open = !open" class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+            <h3 class="font-display font-bold text-brand-400">📚 All Speaking Redemittel</h3>
+            <span class="text-slate-500 text-xl" x-text="open ? '−' : '+'"></span>
+        </button>
+        <div x-show="open" x-transition class="px-4 pb-4 space-y-4">
+            {% for category, phrases in data.redemittel.items() %}
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">{{ category.replace('_', ' ').replace('teil2', 'Teil 2:').replace('teil3', 'Teil 3:').title() }}</p>
+                <div class="space-y-1">
+                    {% for phrase in phrases %}
+                    <p class="text-sm text-slate-300">• {{ phrase }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function speakingApp() {
+    return {
+        currentPart: 2,
+        teil2Topics: {{ data.teil2_topics | tojson }},
+        teil3Scenarios: {{ data.teil3_scenarios | tojson }},
+        teil2Index: 0,
+        teil3Index: 0,
+        speakingTimer: 0,
+        timerRunning: false,
+        timerInterval: null,
+
+        get currentTeil2() { return this.teil2Topics[this.teil2Index]; },
+        get currentTeil3() { return this.teil3Scenarios[this.teil3Index]; },
+
+        init() {
+            this.teil2Topics.sort(() => Math.random() - 0.5);
+            this.teil3Scenarios.sort(() => Math.random() - 0.5);
+        },
+
+        selectPart(part) {
+            this.currentPart = part;
+            this.resetTimer();
+        },
+
+        nextTeil2Topic() {
+            this.teil2Index = (this.teil2Index + 1) % this.teil2Topics.length;
+            this.resetTimer();
+        },
+
+        nextTeil3Scenario() {
+            this.teil3Index = (this.teil3Index + 1) % this.teil3Scenarios.length;
+            this.resetTimer();
+        },
+
+        toggleTimer() {
+            if (this.timerRunning) {
+                clearInterval(this.timerInterval);
+                this.timerRunning = false;
+            } else {
+                this.timerInterval = setInterval(() => this.speakingTimer++, 1000);
+                this.timerRunning = true;
+            }
+        },
+
+        resetTimer() {
+            clearInterval(this.timerInterval);
+            this.timerRunning = false;
+            this.speakingTimer = 0;
+        },
+
+        formatTime(s) {
+            const m = Math.floor(s / 60).toString().padStart(2, '0');
+            const sec = (s % 60).toString().padStart(2, '0');
+            return `${m}:${sec}`;
+        },
+    };
+}
+</script>
+{% endblock %}

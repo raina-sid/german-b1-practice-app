@@ -1,0 +1,207 @@
+{
+  "categories": [
+    {
+      "name": "Arbeit & Beruf",
+      "name_en": "Work & Career",
+      "emoji": "💼",
+      "words": [
+        {"de":"die Bewerbung (-en)","en":"application","ex":"Ich habe meine Bewerbung geschickt."},
+        {"de":"das Vorstellungsgespräch (-e)","en":"job interview","ex":"Morgen habe ich ein Vorstellungsgespräch."},
+        {"de":"der Lebenslauf (⸚e)","en":"CV / resume","ex":"Bitte schicken Sie uns Ihren Lebenslauf."},
+        {"de":"die Stelle (-n)","en":"position / job","ex":"Ich suche eine neue Stelle."},
+        {"de":"der Arbeitgeber (-)","en":"employer","ex":"Mein Arbeitgeber ist sehr nett."},
+        {"de":"der Arbeitnehmer (-)","en":"employee","ex":"Die Arbeitnehmer haben neue Rechte."},
+        {"de":"das Gehalt (⸚er)","en":"salary","ex":"Das Gehalt ist gut."},
+        {"de":"die Überstunde (-n)","en":"overtime","ex":"Ich mache oft Überstunden."},
+        {"de":"kündigen","en":"to quit / to fire","ex":"Er hat seinen Job gekündigt."},
+        {"de":"die Ausbildung (-en)","en":"vocational training","ex":"Sie macht eine Ausbildung als Krankenschwester."},
+        {"de":"der Kollege (-n)","en":"colleague (m)","ex":"Mein Kollege hilft mir immer."},
+        {"de":"die Kollegin (-nen)","en":"colleague (f)","ex":"Meine Kollegin ist sehr nett."},
+        {"de":"der Chef (-s)","en":"boss","ex":"Der Chef hat eine Besprechung."},
+        {"de":"die Besprechung (-en)","en":"meeting","ex":"Wir haben um 10 Uhr eine Besprechung."},
+        {"de":"die Erfahrung (-en)","en":"experience","ex":"Haben Sie Erfahrung in diesem Bereich?"},
+        {"de":"sich bewerben um","en":"to apply for","ex":"Ich bewerbe mich um die Stelle."},
+        {"de":"die Teilzeit","en":"part-time","ex":"Ich arbeite in Teilzeit."},
+        {"de":"der Vertrag (⸚e)","en":"contract","ex":"Ich habe einen unbefristeten Vertrag."},
+        {"de":"das Praktikum (-a)","en":"internship","ex":"Ich mache ein Praktikum bei Siemens."},
+        {"de":"die Fortbildung (-en)","en":"further training","ex":"Nächste Woche habe ich eine Fortbildung."}
+      ]
+    },
+    {
+      "name": "Gesundheit",
+      "name_en": "Health",
+      "emoji": "🏥",
+      "words": [
+        {"de":"der Termin (-e)","en":"appointment","ex":"Ich habe einen Termin beim Arzt."},
+        {"de":"das Rezept (-e)","en":"prescription / recipe","ex":"Der Arzt hat mir ein Rezept gegeben."},
+        {"de":"die Krankenkasse (-n)","en":"health insurance","ex":"Welche Krankenkasse haben Sie?"},
+        {"de":"das Medikament (-e)","en":"medication","ex":"Nehmen Sie dieses Medikament dreimal täglich."},
+        {"de":"die Untersuchung (-en)","en":"examination","ex":"Ich brauche eine Untersuchung."},
+        {"de":"die Erkältung (-en)","en":"cold (illness)","ex":"Ich habe eine Erkältung."},
+        {"de":"das Fieber","en":"fever","ex":"Ich habe 38 Grad Fieber."},
+        {"de":"der Husten","en":"cough","ex":"Ich habe starken Husten."},
+        {"de":"die Apotheke (-n)","en":"pharmacy","ex":"Ich hole das Medikament in der Apotheke."},
+        {"de":"sich erholen","en":"to recover","ex":"Er muss sich von der Operation erholen."},
+        {"de":"die Versicherung (-en)","en":"insurance","ex":"Haben Sie eine Krankenversicherung?"},
+        {"de":"der Notfall (⸚e)","en":"emergency","ex":"Rufen Sie im Notfall die 112 an."},
+        {"de":"die Sprechstunde (-n)","en":"office hours (doctor)","ex":"Die Sprechstunde ist von 8 bis 12 Uhr."},
+        {"de":"verschreiben","en":"to prescribe","ex":"Der Arzt hat mir Tabletten verschrieben."},
+        {"de":"die Beschwerden (pl.)","en":"symptoms / complaints","ex":"Welche Beschwerden haben Sie?"}
+      ]
+    },
+    {
+      "name": "Wohnen",
+      "name_en": "Housing",
+      "emoji": "🏠",
+      "words": [
+        {"de":"die Miete (-n)","en":"rent","ex":"Die Miete ist 800 Euro pro Monat."},
+        {"de":"der Vermieter (-)","en":"landlord","ex":"Der Vermieter ist sehr freundlich."},
+        {"de":"der Mieter (-)","en":"tenant","ex":"Die Mieter haben sich beschwert."},
+        {"de":"die Nebenkosten (pl.)","en":"utilities / additional costs","ex":"Die Nebenkosten sind nicht inklusive."},
+        {"de":"der Mietvertrag (⸚e)","en":"rental agreement","ex":"Ich habe den Mietvertrag unterschrieben."},
+        {"de":"umziehen","en":"to move (house)","ex":"Wir ziehen nächsten Monat um."},
+        {"de":"der Umzug (⸚e)","en":"move (relocation)","ex":"Der Umzug war sehr anstrengend."},
+        {"de":"die Wohngemeinschaft (-en)","en":"shared apartment (WG)","ex":"Ich wohne in einer WG."},
+        {"de":"einrichten","en":"to furnish","ex":"Wir müssen die Wohnung noch einrichten."},
+        {"de":"die Kaution (-en)","en":"deposit (rental)","ex":"Die Kaution beträgt drei Monatsmieten."},
+        {"de":"renovieren","en":"to renovate","ex":"Die Wohnung muss renoviert werden."},
+        {"de":"kündigen","en":"to give notice (terminate)","ex":"Ich muss drei Monate vorher kündigen."},
+        {"de":"die Heizung (-en)","en":"heating","ex":"Die Heizung funktioniert nicht."},
+        {"de":"die Nachbarn (pl.)","en":"neighbors","ex":"Unsere Nachbarn sind sehr nett."},
+        {"de":"die Wohnfläche (-n)","en":"living space","ex":"Die Wohnung hat 65 qm Wohnfläche."}
+      ]
+    },
+    {
+      "name": "Reisen & Verkehr",
+      "name_en": "Travel & Transport",
+      "emoji": "✈️",
+      "words": [
+        {"de":"die Fahrkarte (-n)","en":"ticket (transport)","ex":"Ich habe eine Fahrkarte nach Berlin gekauft."},
+        {"de":"der Fahrplan (⸚e)","en":"timetable / schedule","ex":"Schauen Sie im Fahrplan nach."},
+        {"de":"die Verspätung (-en)","en":"delay","ex":"Der Zug hat 20 Minuten Verspätung."},
+        {"de":"umsteigen","en":"to change / transfer","ex":"Sie müssen in München umsteigen."},
+        {"de":"die Unterkunft (⸚e)","en":"accommodation","ex":"Wir suchen eine günstige Unterkunft."},
+        {"de":"buchen","en":"to book","ex":"Ich habe ein Hotel gebucht."},
+        {"de":"der Flug (⸚e)","en":"flight","ex":"Der Flug dauert zwei Stunden."},
+        {"de":"das Gepäck","en":"luggage","ex":"Mein Gepäck ist verloren gegangen."},
+        {"de":"die Verbindung (-en)","en":"connection (transport)","ex":"Es gibt eine direkte Verbindung nach Hamburg."},
+        {"de":"die Ermäßigung (-en)","en":"discount","ex":"Gibt es eine Ermäßigung für Studenten?"},
+        {"de":"der Reiseführer (-)","en":"travel guide","ex":"Ich habe einen Reiseführer über Berlin."},
+        {"de":"sich verspäten","en":"to be delayed","ex":"Der Zug hat sich verspätet."},
+        {"de":"das Gleis (-e)","en":"platform / track","ex":"Der Zug fährt von Gleis 5 ab."},
+        {"de":"die Haltestelle (-n)","en":"stop (bus/tram)","ex":"Die nächste Haltestelle ist Marienplatz."},
+        {"de":"der Stau (-s)","en":"traffic jam","ex":"Wir stehen im Stau."}
+      ]
+    },
+    {
+      "name": "Freizeit & Hobbys",
+      "name_en": "Leisure & Hobbies",
+      "emoji": "🎨",
+      "words": [
+        {"de":"die Veranstaltung (-en)","en":"event","ex":"Am Samstag gibt es eine Veranstaltung im Park."},
+        {"de":"die Ausstellung (-en)","en":"exhibition","ex":"Wir gehen in eine Kunstausstellung."},
+        {"de":"der Verein (-e)","en":"club / association","ex":"Ich bin Mitglied in einem Sportverein."},
+        {"de":"sich anmelden","en":"to register / sign up","ex":"Ich möchte mich für den Kurs anmelden."},
+        {"de":"die Eintrittskarte (-n)","en":"admission ticket","ex":"Die Eintrittskarte kostet 15 Euro."},
+        {"de":"sich entspannen","en":"to relax","ex":"Am Wochenende entspanne ich mich gern."},
+        {"de":"der Ausflug (⸚e)","en":"excursion / trip","ex":"Wir machen einen Ausflug an den See."},
+        {"de":"die Sendung (-en)","en":"TV show / program","ex":"Welche Sendung schaust du gern?"},
+        {"de":"die Mannschaft (-en)","en":"team","ex":"Unsere Mannschaft hat gewonnen!"},
+        {"de":"das Erlebnis (-se)","en":"experience (event)","ex":"Das war ein tolles Erlebnis."},
+        {"de":"die Aufführung (-en)","en":"performance","ex":"Die Aufführung beginnt um 20 Uhr."},
+        {"de":"basteln","en":"to do crafts","ex":"Die Kinder basteln gern."},
+        {"de":"sammeln","en":"to collect","ex":"Er sammelt Briefmarken."},
+        {"de":"die Mitgliedschaft (-en)","en":"membership","ex":"Die Mitgliedschaft kostet 30 Euro im Monat."},
+        {"de":"wandern","en":"to hike","ex":"Am Wochenende gehen wir wandern."}
+      ]
+    },
+    {
+      "name": "Bildung",
+      "name_en": "Education",
+      "emoji": "📚",
+      "words": [
+        {"de":"die Prüfung (-en)","en":"exam","ex":"Nächste Woche habe ich eine Prüfung."},
+        {"de":"bestehen","en":"to pass (exam)","ex":"Ich habe die Prüfung bestanden!"},
+        {"de":"durchfallen","en":"to fail (exam)","ex":"Er ist leider durchgefallen."},
+        {"de":"der Abschluss (⸚e)","en":"degree / graduation","ex":"Ich habe einen Universitätsabschluss."},
+        {"de":"die Kenntnisse (pl.)","en":"knowledge / skills","ex":"Ich habe gute Englischkenntnisse."},
+        {"de":"die Nachhilfe","en":"tutoring","ex":"Mein Sohn braucht Nachhilfe in Mathe."},
+        {"de":"der Unterricht","en":"class / lesson","ex":"Der Unterricht beginnt um 9 Uhr."},
+        {"de":"die Note (-n)","en":"grade","ex":"Ich habe eine gute Note bekommen."},
+        {"de":"sich vorbereiten auf","en":"to prepare for","ex":"Ich bereite mich auf die Prüfung vor."},
+        {"de":"die Weiterbildung (-en)","en":"continuing education","ex":"Mein Arbeitgeber bezahlt die Weiterbildung."},
+        {"de":"das Zeugnis (-se)","en":"certificate / report card","ex":"Können Sie mir ein Zeugnis ausstellen?"},
+        {"de":"der Kurs (-e)","en":"course","ex":"Ich mache einen Deutschkurs."},
+        {"de":"die Hausaufgabe (-n)","en":"homework","ex":"Hast du die Hausaufgaben gemacht?"},
+        {"de":"lernen","en":"to learn / study","ex":"Ich lerne jeden Tag eine Stunde Deutsch."},
+        {"de":"das Stipendium (-ien)","en":"scholarship","ex":"Sie hat ein Stipendium bekommen."}
+      ]
+    },
+    {
+      "name": "Einkaufen & Geld",
+      "name_en": "Shopping & Money",
+      "emoji": "🛒",
+      "words": [
+        {"de":"das Angebot (-e)","en":"offer / deal","ex":"Diese Woche gibt es tolle Angebote."},
+        {"de":"die Quittung (-en)","en":"receipt","ex":"Kann ich bitte die Quittung haben?"},
+        {"de":"umtauschen","en":"to exchange (return)","ex":"Kann ich dieses Hemd umtauschen?"},
+        {"de":"die Reklamation (-en)","en":"complaint (about product)","ex":"Ich möchte eine Reklamation machen."},
+        {"de":"die Garantie (-n)","en":"warranty","ex":"Das Gerät hat zwei Jahre Garantie."},
+        {"de":"bar bezahlen","en":"to pay cash","ex":"Kann ich bar bezahlen?"},
+        {"de":"die Überweisung (-en)","en":"bank transfer","ex":"Ich mache eine Überweisung."},
+        {"de":"das Konto (-en)","en":"bank account","ex":"Ich möchte ein Konto eröffnen."},
+        {"de":"sparen","en":"to save (money)","ex":"Ich spare für eine Reise."},
+        {"de":"ausgeben","en":"to spend (money)","ex":"Ich gebe zu viel Geld aus."},
+        {"de":"die Rechnung (-en)","en":"bill / invoice","ex":"Die Rechnung bitte!"},
+        {"de":"günstig","en":"cheap / affordable","ex":"Das Restaurant ist günstig."},
+        {"de":"bestellen","en":"to order","ex":"Ich habe ein Buch online bestellt."},
+        {"de":"die Lieferung (-en)","en":"delivery","ex":"Die Lieferung kommt morgen."},
+        {"de":"der Rabatt (-e)","en":"discount","ex":"Es gibt 20% Rabatt."}
+      ]
+    },
+    {
+      "name": "Medien & Kommunikation",
+      "name_en": "Media & Communication",
+      "emoji": "📱",
+      "words": [
+        {"de":"die Nachricht (-en)","en":"message / news","ex":"Ich habe eine Nachricht bekommen."},
+        {"de":"die Sendung (-en)","en":"broadcast / program","ex":"Die Sendung kommt um 20 Uhr."},
+        {"de":"die Zeitung (-en)","en":"newspaper","ex":"Lesen Sie die Zeitung?"},
+        {"de":"die Zeitschrift (-en)","en":"magazine","ex":"Ich lese gern Zeitschriften."},
+        {"de":"die Werbung (-en)","en":"advertisement","ex":"Im Fernsehen gibt es zu viel Werbung."},
+        {"de":"der Bericht (-e)","en":"report","ex":"Ich habe einen Bericht gelesen."},
+        {"de":"herunterladen","en":"to download","ex":"Ich habe eine App heruntergeladen."},
+        {"de":"die Anmeldung (-en)","en":"registration","ex":"Die Anmeldung ist kostenlos."},
+        {"de":"der Anhang (⸚e)","en":"attachment","ex":"Die Datei ist im Anhang."},
+        {"de":"die Datei (-en)","en":"file","ex":"Bitte öffnen Sie die Datei."},
+        {"de":"das Passwort (⸚er)","en":"password","ex":"Ich habe mein Passwort vergessen."},
+        {"de":"die Meinung (-en)","en":"opinion","ex":"Meiner Meinung nach ist das falsch."},
+        {"de":"die Umfrage (-n)","en":"survey / poll","ex":"An der Umfrage haben 1000 Leute teilgenommen."},
+        {"de":"veröffentlichen","en":"to publish","ex":"Der Artikel wurde gestern veröffentlicht."},
+        {"de":"die Quelle (-n)","en":"source","ex":"Was ist die Quelle dieser Information?"}
+      ]
+    },
+    {
+      "name": "Alltag & Behörden",
+      "name_en": "Daily Life & Authorities",
+      "emoji": "🏛️",
+      "words": [
+        {"de":"der Antrag (⸚e)","en":"application / request","ex":"Ich muss einen Antrag stellen."},
+        {"de":"das Formular (-e)","en":"form","ex":"Bitte füllen Sie dieses Formular aus."},
+        {"de":"der Ausweis (-e)","en":"ID card","ex":"Zeigen Sie bitte Ihren Ausweis."},
+        {"de":"die Aufenthaltserlaubnis (-se)","en":"residence permit","ex":"Meine Aufenthaltserlaubnis läuft bald ab."},
+        {"de":"das Amt (⸚er)","en":"office / authority","ex":"Ich muss zum Ausländeramt gehen."},
+        {"de":"die Bescheinigung (-en)","en":"certificate / confirmation","ex":"Ich brauche eine Bescheinigung vom Arzt."},
+        {"de":"die Anmeldung (-en)","en":"registration (official)","ex":"Haben Sie die Anmeldung gemacht?"},
+        {"de":"die Frist (-en)","en":"deadline","ex":"Die Frist endet am 30. Juni."},
+        {"de":"unterschreiben","en":"to sign","ex":"Bitte unterschreiben Sie hier."},
+        {"de":"die Gebühr (-en)","en":"fee","ex":"Die Gebühr beträgt 30 Euro."},
+        {"de":"verlängern","en":"to extend / renew","ex":"Ich muss meinen Ausweis verlängern."},
+        {"de":"beantragen","en":"to apply for (officially)","ex":"Ich möchte einen neuen Pass beantragen."},
+        {"de":"die Genehmigung (-en)","en":"permission / permit","ex":"Sie brauchen eine Genehmigung."},
+        {"de":"zuständig","en":"responsible / in charge","ex":"Wer ist dafür zuständig?"},
+        {"de":"die Unterlagen (pl.)","en":"documents","ex":"Bringen Sie bitte alle Unterlagen mit."}
+      ]
+    }
+  ]
+}

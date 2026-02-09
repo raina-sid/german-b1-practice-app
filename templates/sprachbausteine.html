@@ -1,0 +1,811 @@
+{% extends "base.html" %}
+{% block title %}Sprachbausteine — German Prep{% endblock %}
+
+{% block content %}
+<div x-data="sprachbausteineApp()" x-init="init()" class="max-w-2xl mx-auto"
+     @keydown.window="handleKeydown($event)">
+
+    <!-- SESSION SETUP (shown when no active session) -->
+    <div x-show="showSetup" x-cloak class="space-y-4 animate-slide-up">
+
+        <!-- Resume prompt (if saved session exists) -->
+        <div x-show="hasSavedSession" x-transition class="card-glow rounded-2xl p-6 border-l-4 border-brand-500">
+            <div class="flex items-start gap-4">
+                <div class="text-3xl">🔄</div>
+                <div class="flex-1">
+                    <h3 class="font-display font-bold text-lg text-white mb-1">Weitermachen?</h3>
+                    <p class="text-slate-400 text-sm mb-1">
+                        You have an unfinished session:
+                        <span class="text-brand-400 font-bold" x-text="savedProgress"></span>
+                    </p>
+                    <p class="text-slate-500 text-xs" x-text="savedTimeAgo"></p>
+                    <div class="flex gap-3 mt-3">
+                        <button @click="resumeSession()"
+                                class="bg-brand-500 text-slate-900 font-bold px-5 py-2 rounded-xl hover:bg-brand-400 transition-all">
+                            Resume Session
+                        </button>
+                        <button @click="discardSaved()"
+                                class="bg-slate-700 text-slate-300 px-4 py-2 rounded-xl hover:bg-slate-600 transition-colors text-sm">
+                            Start Fresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New session config -->
+        <div class="card-glow rounded-2xl p-6" :class="hasSavedSession ? 'opacity-50' : ''" x-show="!hasSavedSession || showNewSessionConfig">
+            <h2 class="font-display font-bold text-xl text-white mb-4">🧩 Sprachbausteine Session</h2>
+
+            <!-- Session size -->
+            <div class="mb-5">
+                <p class="text-sm text-slate-400 mb-2">How many exercises?</p>
+                <div class="flex gap-2">
+                    <template x-for="size in [10, 20, 30, 50]" :key="size">
+                        <button @click="sessionSize = size"
+                                :class="sessionSize === size ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                                class="flex-1 px-3 py-2 rounded-xl border-2 text-sm font-bold transition-all hover:border-brand-500/50"
+                                x-text="size">
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Type filter -->
+            <div class="mb-5">
+                <p class="text-sm text-slate-400 mb-2">Focus on specific grammar? <span class="text-slate-600">(or drill everything)</span></p>
+                <div class="flex flex-wrap gap-2">
+                    <button @click="typeFilter = 'all'"
+                            :class="typeFilter === 'all' ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                            class="px-3 py-1.5 rounded-lg border text-xs font-medium transition-all">
+                        🎯 All Types
+                    </button>
+                    <template x-for="t in exerciseTypes" :key="t.value">
+                        <button @click="typeFilter = t.value"
+                                :class="typeFilter === t.value ? 'bg-brand-500/20 border-brand-500 text-brand-400' : 'bg-slate-800 border-slate-700 text-slate-400'"
+                                class="px-3 py-1.5 rounded-lg border text-xs font-medium transition-all"
+                                x-text="t.label">
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Start button -->
+            <button @click="startNewSession()"
+                    class="w-full bg-gradient-to-r from-brand-500 to-amber-500 text-slate-900 font-bold px-6 py-3 rounded-xl hover:from-brand-400 hover:to-amber-400 transition-all hover:shadow-lg hover:shadow-brand-500/25 active:scale-95 flex items-center justify-center gap-2">
+                🚀 Los geht's!
+            </button>
+
+            <p class="text-slate-600 text-xs text-center mt-3">Keyboard shortcuts: 1-4 = pick answer, Enter = next, Esc = dashboard</p>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div x-show="loading && !showSetup" class="space-y-4 animate-slide-up">
+        <div class="card-glow rounded-2xl p-8 text-center">
+            <div class="text-4xl mb-4 animate-bounce">🧩</div>
+            <p class="text-brand-400 font-display font-bold text-lg" x-text="loadingMessage"></p>
+            <div class="shimmer h-4 w-48 mx-auto mt-4 rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- SESSION ACTIVE -->
+    <div x-show="!loading && !showSetup && !showSessionEnd" x-cloak class="space-y-4">
+
+        <!-- Top bar -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-slate-400">
+                    <span class="text-white font-bold" x-text="questionsAnswered + 1"></span>
+                    <span>/ <span x-text="exercises.length"></span></span>
+                </div>
+                <div class="text-sm">
+                    <span class="text-emerald-400 font-bold" x-text="correctCount"></span>
+                    <span class="text-slate-500">✓</span>
+                    <span class="text-red-400 font-bold ml-1" x-text="wrongCount"></span>
+                    <span class="text-slate-500">✗</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div x-show="currentStreak >= 3" x-transition class="text-sm">
+                    <span class="text-brand-400 font-bold" x-text="currentStreak"></span>
+                    <span :class="currentStreak >= 10 ? 'animate-pulse' : ''">🔥</span>
+                </div>
+                <div class="text-sm text-slate-500 font-mono" x-text="formatTime(elapsedSeconds)"></div>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-gradient-to-r from-brand-500 to-emerald-500 h-2 rounded-full progress-bar-fill"
+                 :style="'width: ' + progressPercent + '%'"></div>
+        </div>
+
+        <!-- Exercise type + keyboard hint -->
+        <div class="flex items-center justify-between" x-show="currentExercise">
+            <div class="flex items-center gap-2">
+                <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700"
+                      x-text="currentExercise?.type_label"></span>
+                <span class="text-xs text-slate-600" x-text="'Difficulty: ' + '⭐'.repeat(currentExercise?.difficulty || 1)"></span>
+            </div>
+            <span class="text-xs text-slate-700 hidden sm:inline">Press 1-4 to answer</span>
+        </div>
+
+        <!-- Exercise Card -->
+        <div class="card-glow rounded-2xl p-6 sm:p-8 transition-all"
+             :class="{'animate-shake': shakeCard}"
+             x-show="currentExercise">
+
+            <p class="text-lg sm:text-xl text-white leading-relaxed mb-6 font-medium"
+               x-html="formatPrompt(currentExercise?.prompt || '')"></p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <template x-for="(option, idx) in (currentExercise?.options || [])" :key="idx">
+                    <button @click="submitAnswer(idx)"
+                            :disabled="answered"
+                            :class="getOptionClass(idx)"
+                            class="option-btn text-left px-5 py-3.5 rounded-xl border-2 font-medium text-sm sm:text-base transition-all flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
+                              :class="answered && idx === currentExercise.correct_index ? 'bg-emerald-500/30 text-emerald-300' :
+                                       answered && idx === selectedOption && idx !== currentExercise.correct_index ? 'bg-red-500/30 text-red-300' :
+                                       'bg-slate-700 text-slate-400'"
+                              x-text="(idx + 1)">
+                        </span>
+                        <span x-text="option"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Feedback -->
+            <div x-show="answered" x-transition class="mt-6 space-y-3">
+                <div :class="isCorrect ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30'"
+                     class="rounded-xl p-4 border">
+                    <p class="font-bold text-sm mb-1"
+                       :class="isCorrect ? 'text-emerald-400' : 'text-red-400'"
+                       x-text="isCorrect ? feedbackMessage : wrongMessage"></p>
+                    <p class="text-slate-300 text-sm leading-relaxed" x-text="currentExercise?.explanation"></p>
+                </div>
+
+                <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+                    <p class="text-xs text-purple-400 uppercase tracking-wider mb-1 font-bold">📏 Grammatik-Regel</p>
+                    <p class="text-purple-200 text-sm leading-relaxed" x-text="currentExercise?.rule"></p>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500" x-text="'+' + xpGained + ' XP'"></span>
+                    <button @click="nextExercise()"
+                            class="bg-brand-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl hover:bg-brand-400 transition-all active:scale-95 flex items-center gap-2">
+                        Weiter
+                        <span class="text-xs opacity-70 hidden sm:inline">(Enter)</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Summary -->
+        <div x-show="showMiniSummary" x-transition class="card-glow rounded-2xl p-6 text-center">
+            <div class="text-4xl mb-3" x-text="miniSummaryEmoji"></div>
+            <h3 class="font-display font-bold text-xl text-white mb-2" x-text="miniSummaryTitle"></h3>
+            <p class="text-slate-400 text-sm mb-4">
+                <span class="text-emerald-400 font-bold" x-text="miniCorrect"></span> / 10 correct
+            </p>
+            <div x-show="weakSpots.length > 0" class="mb-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Focus areas:</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <template x-for="spot in weakSpots" :key="spot">
+                        <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded-full" x-text="spot"></span>
+                    </template>
+                </div>
+            </div>
+            <button @click="dismissMiniSummary()"
+                    class="bg-brand-500 text-slate-900 font-bold px-6 py-2.5 rounded-xl hover:bg-brand-400 transition-all">
+                Weiter machen! 💪 <span class="text-xs opacity-70">(Enter)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- SESSION END -->
+    <div x-show="showSessionEnd" x-transition x-cloak class="space-y-4 animate-slide-up">
+        <div class="card-glow rounded-2xl p-8 text-center">
+            <div class="text-5xl mb-4" x-text="sessionPhase === 'review' ? '🧠' : '🎉'"></div>
+            <h2 class="font-display font-bold text-2xl text-white mb-2"
+                x-text="sessionPhase === 'review' ? 'Review Complete!' : 'Session Complete!'"></h2>
+            <p class="text-slate-400 mb-6"
+               x-text="sessionPhase === 'review' ? 'Nice — you cleaned up your mistakes.' : 'Gut gemacht! You hit your target. Here\\'s how you did:'"></p>
+
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-slate-800 rounded-xl p-4">
+                    <div class="text-2xl font-display font-bold text-white" x-text="questionsAnswered"></div>
+                    <div class="text-xs text-slate-500">Fragen</div>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4">
+                    <div class="text-2xl font-display font-bold text-emerald-400" x-text="questionsAnswered > 0 ? Math.round((correctCount / questionsAnswered) * 100) + '%' : '0%'"></div>
+                    <div class="text-xs text-slate-500">Richtig</div>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4">
+                    <div class="text-2xl font-display font-bold text-brand-400" x-text="bestStreak"></div>
+                    <div class="text-xs text-slate-500">Best Streak</div>
+                </div>
+            </div>
+
+            <div x-show="Object.keys(typeBreakdown).length > 0" class="mb-6 text-left">
+                <p class="text-xs text-slate-500 uppercase tracking-wider mb-3 text-center">Performance by type:</p>
+                <template x-for="(stats, type) in typeBreakdown" :key="type">
+                    <div class="flex items-center justify-between py-2 border-b border-slate-800">
+                        <span class="text-sm text-slate-300" x-text="type"></span>
+                        <span class="text-sm font-bold"
+                              :class="stats.accuracy >= 70 ? 'text-emerald-400' : stats.accuracy >= 50 ? 'text-brand-400' : 'text-red-400'"
+                              x-text="stats.accuracy + '%'"></span>
+                    </div>
+                </template>
+            </div>
+
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button x-show="sessionPhase === 'main' && mistakeCount > 0" x-cloak
+                        @click="startReviewRound()"
+                        class="bg-emerald-500/20 text-emerald-200 border border-emerald-500/30 font-bold px-5 py-2.5 rounded-xl hover:bg-emerald-500/25 transition-all">
+                    Review <span x-text="mistakeCount"></span> mistakes ✅
+                </button>
+                <button @click="practiceMore()"
+                        class="bg-slate-800 text-slate-200 border border-slate-700 font-bold px-5 py-2.5 rounded-xl hover:bg-slate-700 hover:border-brand-500/40 transition-all">
+                    Practice more (new set) ➕
+                </button>
+                <a href="/"
+                   class="bg-slate-700 text-slate-200 px-5 py-2.5 rounded-xl hover:bg-slate-600 transition-colors font-medium">
+                    Genug für heute
+                </a>
+                <button @click="restartSession()"
+                        class="bg-brand-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl hover:bg-brand-400 transition-all">
+                    Nochmal! 🔄
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const STORAGE_KEY = 'b1hacker_sb_session';
+
+function sprachbausteineApp() {
+    return {
+        // Setup state
+        showSetup: true,
+        hasSavedSession: false,
+        showNewSessionConfig: false,
+        savedProgress: '',
+        savedTimeAgo: '',
+        sessionSize: 30,
+        typeFilter: 'all',
+        exerciseTypes: [
+            { value: 'connector', label: '🔗 Konnektoren' },
+            { value: 'preposition', label: '📌 Präpositionen' },
+            { value: 'verb_position', label: '🔀 Wortstellung' },
+            { value: 'konjunktiv', label: '💭 Konjunktiv II' },
+            { value: 'adjective_ending', label: '📐 Adjektivendungen' },
+            { value: 'relative_pronoun', label: '🔗 Relativsätze' },
+            { value: 'collocation', label: '🧱 Feste Wendungen' },
+            { value: 'tense', label: '⏰ Zeitformen' },
+            { value: 'passive', label: '🔄 Passiv' },
+            { value: 'negation', label: '🚫 Verneinung' },
+        ],
+
+        // Session state
+        sessionPhase: 'main', // 'main' | 'review'
+        seenIds: [],
+        exercises: [],
+        currentIndex: 0,
+        answered: false,
+        selectedOption: null,
+        isCorrect: false,
+        correctCount: 0,
+        wrongCount: 0,
+        questionsAnswered: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        loading: false,
+        shakeCard: false,
+        xpGained: 0,
+        showMiniSummary: false,
+        showSessionEnd: false,
+        miniCorrect: 0,
+        miniSummaryEmoji: '🎯',
+        miniSummaryTitle: '',
+        weakSpots: [],
+        wrongQueue: [],
+        typeBreakdown: {},
+        elapsedSeconds: 0,
+        timerInterval: null,
+        feedbackMessage: '',
+        wrongMessage: '',
+        loadingMessage: '',
+        _lastMiniCorrect: 0,
+
+        loadingMessages: [
+            'Warming up the Umlauts... Ä Ö Ü ✓',
+            'Calibrating der/die/das randomizer...',
+            'Loading Konjunktiv II fuel...',
+            'Shuffling the Sprachbausteine...',
+            'Preparing grammar traps... 😈',
+            'Connecting to the Dativ dimension...',
+        ],
+        correctMessages: [
+            'Genau! 🎯', 'Richtig! Sehr gut!', 'Perfekt! 💪', 'Wunderbar!',
+            'Ausgezeichnet! ⭐', 'Toll gemacht!', 'Super! Weiter so!',
+            'Bravo! 👏', 'Korrekt! Du bist gut!', 'Jawohl! ✅',
+        ],
+        wrongMessages: [
+            'Nicht ganz... 🤔', 'Fast richtig!', 'Leider falsch, aber du lernst dabei!',
+            'Nächstes Mal! 💪', 'Übung macht den Meister!',
+            'Hmm, nicht ganz. Schau dir die Regel an:', 'Knapp daneben! Merke dir die Regel:',
+        ],
+
+        get currentExercise() { return this.exercises[this.currentIndex] || null; },
+        get progressPercent() {
+            if (this.exercises.length === 0) return 0;
+            return Math.round((this.questionsAnswered / this.exercises.length) * 100);
+        },
+
+        get mistakeCount() {
+            const ids = new Set();
+            for (const e of (this.wrongQueue || [])) {
+                if (e && e.id) ids.add(e.id);
+            }
+            return ids.size;
+        },
+
+        init() {
+            // Check for saved session
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    // Expire after 12 hours
+                    if (Date.now() - data.timestamp < 12 * 60 * 60 * 1000) {
+                        this.hasSavedSession = true;
+                        this.savedProgress = `Question ${data.questionsAnswered + 1} of ${data.exercises.length} · ${data.correctCount}✓ ${data.wrongCount}✗ · ${this.formatTime(data.elapsedSeconds)} elapsed`;
+                        const mins = Math.round((Date.now() - data.timestamp) / 60000);
+                        this.savedTimeAgo = mins < 60 ? `Saved ${mins} min ago` : `Saved ${Math.round(mins/60)}h ago`;
+                    } else {
+                        localStorage.removeItem(STORAGE_KEY);
+                    }
+                } catch(e) {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+        },
+
+        resumeSession() {
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            this.exercises = data.exercises;
+            this.currentIndex = data.currentIndex;
+            this.correctCount = data.correctCount;
+            this.wrongCount = data.wrongCount;
+            this.questionsAnswered = data.questionsAnswered;
+            this.currentStreak = data.currentStreak;
+            this.bestStreak = data.bestStreak;
+            this.wrongQueue = data.wrongQueue || [];
+            this.typeBreakdown = data.typeBreakdown || {};
+            this.elapsedSeconds = data.elapsedSeconds || 0;
+            this._lastMiniCorrect = data._lastMiniCorrect || 0;
+            this.sessionSize = data.sessionSize || 30;
+            this.typeFilter = data.typeFilter || 'all';
+            this.sessionPhase = data.sessionPhase || 'main';
+            this.seenIds = data.seenIds || [];
+
+            this.showSetup = false;
+            this.timerInterval = setInterval(() => { this.elapsedSeconds++; }, 1000);
+        },
+
+        discardSaved() {
+            localStorage.removeItem(STORAGE_KEY);
+            this.hasSavedSession = false;
+            this.showNewSessionConfig = true;
+        },
+
+        async startNewSession() {
+            this.showSetup = false;
+            this.loading = true;
+            this.loadingMessage = this.loadingMessages[Math.floor(Math.random() * this.loadingMessages.length)];
+            this.sessionPhase = 'main';
+            this.showSessionEnd = false;
+            this.showMiniSummary = false;
+            this.exercises = [];
+            this.seenIds = [];
+            this.currentIndex = 0;
+            this.answered = false;
+            this.selectedOption = null;
+            this.isCorrect = false;
+            this.correctCount = 0;
+            this.wrongCount = 0;
+            this.questionsAnswered = 0;
+            this.currentStreak = 0;
+            this.bestStreak = 0;
+            this.wrongQueue = [];
+            this.typeBreakdown = {};
+            this._lastMiniCorrect = 0;
+            this.elapsedSeconds = 0;
+            if (this.timerInterval) clearInterval(this.timerInterval);
+
+            let url = `/api/exercises?limit=${this.sessionSize}`;
+            if (this.typeFilter !== 'all') url += `&type=${this.typeFilter}`;
+
+            try {
+                const res = await fetch(url);
+                this.exercises = await res.json();
+                this.seenIds = (this.exercises || []).map(e => e?.id).filter(Boolean);
+            } catch (e) {
+                console.error('Failed to load exercises:', e);
+            }
+
+            this.timerInterval = setInterval(() => { this.elapsedSeconds++; }, 1000);
+            setTimeout(() => { this.loading = false; }, 800);
+        },
+
+        startReviewRound() {
+            if (this.mistakeCount === 0) return;
+
+            // Unique mistakes by id, one retry each.
+            const seen = new Set();
+            const review = [];
+            for (const e of this.wrongQueue) {
+                if (!e || !e.id) continue;
+                if (seen.has(e.id)) continue;
+                seen.add(e.id);
+                review.push({ ...e });
+            }
+
+            this.sessionPhase = 'review';
+            this.exercises = review;
+            this.currentIndex = 0;
+            this.answered = false;
+            this.selectedOption = null;
+            this.isCorrect = false;
+            this.correctCount = 0;
+            this.wrongCount = 0;
+            this.questionsAnswered = 0;
+            this.currentStreak = 0;
+            this.bestStreak = 0;
+            this.typeBreakdown = {};
+            this.showSessionEnd = false;
+            this.showMiniSummary = false;
+            this._lastMiniCorrect = 0;
+            this.wrongQueue = []; // prevent endless review loops
+
+            // Restart timer for the review round
+            this.elapsedSeconds = 0;
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            this.timerInterval = setInterval(() => { this.elapsedSeconds++; }, 1000);
+
+            this.saveState();
+        },
+
+        async practiceMore() {
+            // Fetch a fresh batch, excluding anything already seen in this run.
+            this.showSessionEnd = false;
+            this.loading = true;
+            this.loadingMessage = this.loadingMessages[Math.floor(Math.random() * this.loadingMessages.length)];
+
+            let url = `/api/exercises?limit=${this.sessionSize}`;
+            if (this.typeFilter !== 'all') url += `&type=${this.typeFilter}`;
+            if ((this.seenIds || []).length > 0) url += `&exclude=${encodeURIComponent(this.seenIds.join(','))}`;
+
+            let newExercises = [];
+            try {
+                const res = await fetch(url);
+                newExercises = await res.json();
+            } catch (e) {
+                console.error('Failed to load more exercises:', e);
+            }
+
+            if (!Array.isArray(newExercises) || newExercises.length === 0) {
+                this.loading = false;
+                this.showSessionEnd = true;
+                document.dispatchEvent(new CustomEvent('achievement', {
+                    detail: { name: 'Keine neuen Fragen 🧩', desc: 'Du hast alle neuen Fragen für diesen Filter schon gesehen. Wechsel den Typ oder mach morgen weiter.' }
+                }));
+                return;
+            }
+
+            // Start a fresh main round with the new set
+            this.sessionPhase = 'main';
+            this.showMiniSummary = false;
+            this.exercises = newExercises;
+            for (const e of newExercises) {
+                if (e && e.id && !(this.seenIds || []).includes(e.id)) this.seenIds.push(e.id);
+            }
+            this.currentIndex = 0;
+            this.answered = false;
+            this.selectedOption = null;
+            this.isCorrect = false;
+            this.correctCount = 0;
+            this.wrongCount = 0;
+            this.questionsAnswered = 0;
+            this.currentStreak = 0;
+            this.bestStreak = 0;
+            this.wrongQueue = [];
+            this.typeBreakdown = {};
+            this._lastMiniCorrect = 0;
+
+            this.elapsedSeconds = 0;
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            this.timerInterval = setInterval(() => { this.elapsedSeconds++; }, 1000);
+
+            setTimeout(() => { this.loading = false; }, 600);
+            this.saveState();
+        },
+
+        saveState() {
+            const state = {
+                timestamp: Date.now(),
+                exercises: this.exercises,
+                currentIndex: this.currentIndex,
+                correctCount: this.correctCount,
+                wrongCount: this.wrongCount,
+                questionsAnswered: this.questionsAnswered,
+                currentStreak: this.currentStreak,
+                bestStreak: this.bestStreak,
+                wrongQueue: this.wrongQueue,
+                typeBreakdown: this.typeBreakdown,
+                elapsedSeconds: this.elapsedSeconds,
+                _lastMiniCorrect: this._lastMiniCorrect,
+                sessionSize: this.sessionSize,
+                typeFilter: this.typeFilter,
+                sessionPhase: this.sessionPhase,
+                seenIds: this.seenIds,
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        },
+
+        clearSavedState() {
+            localStorage.removeItem(STORAGE_KEY);
+        },
+
+        // ── Keyboard shortcuts ──────────────────────
+        handleKeydown(e) {
+            if (this.showSetup || this.loading || this.showSessionEnd) return;
+
+            // Mini summary dismiss
+            if (this.showMiniSummary && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                this.dismissMiniSummary();
+                return;
+            }
+
+            // Answer selection: 1-4 keys
+            if (!this.answered && !this.showMiniSummary && e.key >= '1' && e.key <= '4') {
+                const idx = parseInt(e.key) - 1;
+                if (idx < (this.currentExercise?.options?.length || 0)) {
+                    this.submitAnswer(idx);
+                }
+                return;
+            }
+
+            // Advance: Enter or Space
+            if (this.answered && !this.showMiniSummary && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                this.nextExercise();
+                return;
+            }
+
+            // Escape: go to dashboard
+            if (e.key === 'Escape') {
+                window.location.href = '/';
+            }
+        },
+
+        // ── Exercise logic ──────────────────────────
+        formatPrompt(prompt) {
+            return prompt.replace('_____', '<span class="text-brand-400 font-bold border-b-2 border-brand-400/50 px-1">_______</span>');
+        },
+
+        formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        },
+
+        getOptionClass(idx) {
+            const base = 'border-2 ';
+            if (!this.answered) {
+                return base + 'bg-slate-800/50 border-slate-700 text-slate-200 hover:border-brand-500/50 hover:bg-slate-700/50 cursor-pointer';
+            }
+            if (idx === this.currentExercise.correct_index) return base + 'option-correct cursor-default';
+            if (idx === this.selectedOption && idx !== this.currentExercise.correct_index) return base + 'option-wrong cursor-default';
+            return base + 'bg-slate-800/30 border-slate-700/50 text-slate-600 cursor-default';
+        },
+
+        async submitAnswer(idx) {
+            if (this.answered) return;
+
+            this.answered = true;
+            this.selectedOption = idx;
+            this.isCorrect = idx === this.currentExercise.correct_index;
+            this.questionsAnswered++;
+
+            if (this.isCorrect) {
+                this.correctCount++;
+                this.currentStreak++;
+                if (this.currentStreak > this.bestStreak) this.bestStreak = this.currentStreak;
+                this.feedbackMessage = this.correctMessages[Math.floor(Math.random() * this.correctMessages.length)];
+
+                if (this.currentStreak === 10) {
+                    document.dispatchEvent(new CustomEvent('achievement', {
+                        detail: { name: 'Zehn am Stück! 🔥🔥🔥', desc: '10 correct in a row! Unaufhaltbar!' }
+                    }));
+                    this.launchLocalConfetti();
+                }
+                if (this.currentStreak === 20) this.launchLocalConfetti();
+            } else {
+                this.wrongCount++;
+                this.currentStreak = 0;
+                this.wrongMessage = this.wrongMessages[Math.floor(Math.random() * this.wrongMessages.length)];
+                this.shakeCard = true;
+                setTimeout(() => this.shakeCard = false, 500);
+                if (this.sessionPhase === 'main') {
+                    const alreadyQueued = (this.wrongQueue || []).some(e => e && e.id === this.currentExercise.id);
+                    if (!alreadyQueued) this.wrongQueue.push({ ...this.currentExercise });
+                }
+
+                if (this.wrongCount >= 5 && this.correctCount === 0) {
+                    document.dispatchEvent(new CustomEvent('achievement', {
+                        detail: { name: 'Keine Sorge! 😅', desc: 'Auch Einstein hat mal Fehler gemacht... oh wait, er war Deutscher.' }
+                    }));
+                }
+            }
+
+            // Track per-type stats
+            const type = this.currentExercise.type_label;
+            if (!this.typeBreakdown[type]) this.typeBreakdown[type] = { total: 0, correct: 0, accuracy: 0 };
+            this.typeBreakdown[type].total++;
+            if (this.isCorrect) this.typeBreakdown[type].correct++;
+            this.typeBreakdown[type].accuracy = Math.round((this.typeBreakdown[type].correct / this.typeBreakdown[type].total) * 100);
+
+            // Save to localStorage
+            this.saveState();
+
+            // Send to server
+            try {
+                const res = await fetch('/api/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        exercise_id: this.currentExercise.id,
+                        selected_index: idx,
+                        correct_index: this.currentExercise.correct_index,
+                        exercise_type: this.currentExercise.type,
+                    })
+                });
+                const data = await res.json();
+                this.xpGained = data.xp_gained;
+
+                if (data.new_achievements && data.new_achievements.length > 0) {
+                    data.new_achievements.forEach(a => {
+                        document.dispatchEvent(new CustomEvent('achievement', {
+                            detail: { name: a.name, desc: a.description }
+                        }));
+                    });
+                }
+            } catch (e) {
+                this.xpGained = this.isCorrect ? 10 : 2;
+            }
+        },
+
+        nextExercise() {
+            this.answered = false;
+            this.selectedOption = null;
+            this.isCorrect = false;
+            this.xpGained = 0;
+
+            // If that was the final question, end immediately (don't show a mini-summary wall).
+            if (this.currentIndex + 1 >= this.exercises.length) {
+                this.endSession();
+                return;
+            }
+
+            if (this.questionsAnswered > 0 && this.questionsAnswered % 10 === 0) {
+                this.triggerMiniSummary();
+                return;
+            }
+            this.advanceExercise();
+        },
+
+        advanceExercise() {
+            // End cleanly when the chosen set is finished.
+            // Wrong answers are reviewed via an explicit review round, not by recycling forever.
+            if (this.currentIndex + 1 >= this.exercises.length) {
+                this.endSession();
+                return;
+            }
+            this.currentIndex++;
+            this.saveState();
+        },
+
+        triggerMiniSummary() {
+            this.miniCorrect = this.correctCount - (this._lastMiniCorrect || 0);
+            this._lastMiniCorrect = this.correctCount;
+
+            if (this.miniCorrect >= 9) { this.miniSummaryEmoji = '🏆'; this.miniSummaryTitle = 'Fantastisch!'; }
+            else if (this.miniCorrect >= 7) { this.miniSummaryEmoji = '💪'; this.miniSummaryTitle = 'Sehr gut!'; }
+            else if (this.miniCorrect >= 5) { this.miniSummaryEmoji = '👍'; this.miniSummaryTitle = 'Nicht schlecht!'; }
+            else { this.miniSummaryEmoji = '📚'; this.miniSummaryTitle = 'Weiter üben!'; }
+
+            this.weakSpots = [];
+            for (const [type, stats] of Object.entries(this.typeBreakdown)) {
+                if (stats.accuracy < 60 && stats.total >= 2) this.weakSpots.push(type);
+            }
+            this.showMiniSummary = true;
+        },
+
+        dismissMiniSummary() {
+            this.showMiniSummary = false;
+            this.advanceExercise();
+        },
+
+        endSession() {
+            clearInterval(this.timerInterval);
+            this.showSessionEnd = true;
+            this.clearSavedState();
+            this.launchLocalConfetti();
+        },
+
+        restartSession() {
+            this.exercises = [];
+            this.seenIds = [];
+            this.currentIndex = 0;
+            this.answered = false;
+            this.selectedOption = null;
+            this.isCorrect = false;
+            this.correctCount = 0;
+            this.wrongCount = 0;
+            this.questionsAnswered = 0;
+            this.currentStreak = 0;
+            this.bestStreak = 0;
+            this.wrongQueue = [];
+            this.typeBreakdown = {};
+            this.showSessionEnd = false;
+            this.showMiniSummary = false;
+            this.elapsedSeconds = 0;
+            this._lastMiniCorrect = 0;
+            this.sessionPhase = 'main';
+            this.clearSavedState();
+            // Show setup screen again
+            this.showSetup = true;
+            this.hasSavedSession = false;
+            this.showNewSessionConfig = true;
+        },
+
+        launchLocalConfetti() {
+            const colors = ['#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#3b82f6', '#ec4899'];
+            for (let i = 0; i < 40; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.top = '-10px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                piece.style.width = (5 + Math.random() * 8) + 'px';
+                piece.style.height = (5 + Math.random() * 8) + 'px';
+                document.body.appendChild(piece);
+                piece.animate([
+                    { top: '-10px', opacity: 1, transform: `rotate(0deg) translateX(0)` },
+                    { top: '100vh', opacity: 0, transform: `rotate(${360 + Math.random() * 720}deg) translateX(${(Math.random() - 0.5) * 200}px)` }
+                ], {
+                    duration: 1500 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                }).onfinish = () => piece.remove();
+            }
+        },
+    };
+}
+
+document.addEventListener('achievement', (e) => {
+    const app = document.querySelector('[x-data="baseApp()"]');
+    if (app && app._x_dataStack) {
+        app._x_dataStack[0].triggerAchievement(e.detail.name, e.detail.desc);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{
+  "teil2_topics": [
+    {"id":"s01","topic":"Online-Shopping: Fluch oder Segen?","points":["Sprechen Sie über Ihre persönlichen Erfahrungen","Was sind die Vorteile von Online-Shopping?","Was sind die Nachteile?","Wie ist die Situation in Ihrem Heimatland?"]},
+    {"id":"s02","topic":"Soziale Medien und ihr Einfluss auf unser Leben","points":["Nutzen Sie soziale Medien? Welche?","Was sind die Vorteile?","Was sind die Risiken?","Wie ist die Situation in Ihrem Heimatland?"]},
+    {"id":"s03","topic":"Soll man ein Haustier haben?","points":["Haben Sie ein Haustier oder möchten Sie eins?","Was sind die Vorteile eines Haustieres?","Welche Nachteile gibt es?","Wie denken die Menschen in Ihrem Heimatland darüber?"]},
+    {"id":"s04","topic":"Gesunde Ernährung im Alltag","points":["Was essen Sie normalerweise?","Warum ist gesunde Ernährung wichtig?","Was macht es schwer, sich gesund zu ernähren?","Wie ist die Esskultur in Ihrem Heimatland?"]},
+    {"id":"s05","topic":"Homeoffice: Die Zukunft der Arbeit?","points":["Haben Sie Erfahrung mit Homeoffice?","Was sind die Vorteile?","Was sind die Nachteile?","Wie ist die Arbeitssituation in Ihrem Heimatland?"]},
+    {"id":"s06","topic":"Sport und Bewegung im Alltag","points":["Treiben Sie Sport? Welchen?","Warum ist Sport wichtig?","Warum treiben viele Menschen keinen Sport?","Welche Sportarten sind in Ihrem Heimatland beliebt?"]},
+    {"id":"s07","topic":"Sollen Kinder ein Smartphone haben?","points":["Ab welchem Alter sollten Kinder ein Smartphone bekommen?","Was sind die Vorteile?","Was sind die Risiken?","Wie ist es in Ihrem Heimatland?"]},
+    {"id":"s08","topic":"Umweltschutz im Alltag","points":["Was tun Sie persönlich für die Umwelt?","Was kann jeder tun?","Warum ist Umweltschutz wichtig?","Wie ist das Umweltbewusstsein in Ihrem Heimatland?"]},
+    {"id":"s09","topic":"Öffentliche Verkehrsmittel vs. eigenes Auto","points":["Wie kommen Sie zur Arbeit/Schule?","Was sind die Vorteile von öffentlichen Verkehrsmitteln?","Warum fahren viele Menschen lieber Auto?","Wie ist die Situation in Ihrem Heimatland?"]},
+    {"id":"s10","topic":"Leben in der Stadt oder auf dem Land?","points":["Wo wohnen Sie lieber?","Was sind die Vorteile der Stadt?","Was sind die Vorteile des Landlebens?","Wo leben die meisten Menschen in Ihrem Heimatland?"]},
+    {"id":"s11","topic":"Fremdsprachen lernen: Warum und wie?","points":["Welche Sprachen sprechen Sie?","Warum ist es wichtig, Fremdsprachen zu lernen?","Was ist die beste Methode zum Sprachenlernen?","Welche Sprachen lernt man in Ihrem Heimatland?"]},
+    {"id":"s12","topic":"Fernsehen vs. Streaming-Dienste","points":["Was schauen Sie lieber: Fernsehen oder Streaming?","Was sind die Vorteile von Streaming-Diensten?","Gibt es auch Nachteile?","Was ist in Ihrem Heimatland beliebt?"]},
+    {"id":"s13","topic":"Brauchen wir Bargeld noch?","points":["Bezahlen Sie lieber bar oder mit Karte?","Was sind die Vorteile vom bargeldlosen Bezahlen?","Gibt es auch Nachteile?","Wie bezahlt man in Ihrem Heimatland?"]},
+    {"id":"s14","topic":"Ehrenamt: Sollte jeder freiwillig arbeiten?","points":["Haben Sie Erfahrung mit ehrenamtlicher Arbeit?","Warum ist Ehrenamt wichtig?","Was sind die Schwierigkeiten?","Gibt es Ehrenamt in Ihrem Heimatland?"]},
+    {"id":"s15","topic":"Ist Schönheit im Leben wichtig?","points":["Was bedeutet Schönheit für Sie?","Welche Rolle spielt das Aussehen in der Gesellschaft?","Gibt es auch Nachteile, wenn man zu viel Wert auf Schönheit legt?","Wie ist es in Ihrem Heimatland?"]},
+    {"id":"s16","topic":"Urlaub: Strand oder Berge?","points":["Was machen Sie am liebsten im Urlaub?","Was sind die Vorteile von Strandurlaub?","Was sind die Vorteile von Bergurlaub?","Wohin reisen die Menschen in Ihrem Heimatland?"]},
+    {"id":"s17","topic":"Sollte man im Ausland studieren?","points":["Haben Sie Erfahrung mit dem Leben im Ausland?","Was sind die Vorteile?","Was sind die Schwierigkeiten?","Studieren viele junge Leute aus Ihrem Heimatland im Ausland?"]},
+    {"id":"s18","topic":"Kochen zu Hause oder Essen bestellen?","points":["Kochen Sie gern?","Was sind die Vorteile vom Selberkochen?","Warum bestellen viele Menschen lieber Essen?","Was ist in Ihrem Heimatland üblicher?"]},
+    {"id":"s19","topic":"Reisen bildet: Stimmt das?","points":["Reisen Sie gern? Wohin?","Was kann man durch Reisen lernen?","Gibt es auch Nachteile des Reisens?","Wie reisen die Menschen in Ihrem Heimatland?"]},
+    {"id":"s20","topic":"Arbeit und Freizeit: Wie findet man die richtige Balance?","points":["Wie sieht Ihr Alltag aus?","Warum ist die Work-Life-Balance wichtig?","Was tun Sie, um sich zu entspannen?","Wie ist die Arbeitssituation in Ihrem Heimatland?"]}
+  ],
+  "teil3_scenarios": [
+    {"id":"p01","scenario":"Sie und Ihr Partner möchten zusammen einen Ausflug am Wochenende machen.","points":["Wohin fahren wir?","Wann treffen wir uns?","Was nehmen wir mit?","Wie kommen wir dorthin?"]},
+    {"id":"p02","scenario":"Sie möchten zusammen eine Überraschungsparty für einen Freund organisieren.","points":["Wo machen wir die Party?","Wen laden wir ein?","Was gibt es zu essen und trinken?","Was schenken wir?"]},
+    {"id":"p03","scenario":"Sie und Ihr Partner möchten zusammen Sport machen.","points":["Welchen Sport machen wir?","Wann und wie oft treffen wir uns?","Wo trainieren wir?","Was brauchen wir dafür?"]},
+    {"id":"p04","scenario":"Sie möchten zusammen einen Deutschkurs-Abschluss feiern.","points":["Wo feiern wir?","Wann feiern wir?","Was organisieren wir (Essen, Musik)?","Wen laden wir noch ein?"]},
+    {"id":"p05","scenario":"Sie und Ihr Partner möchten zusammen eine Wohnung suchen.","points":["In welchem Stadtteil suchen wir?","Wie viele Zimmer brauchen wir?","Wie viel Miete können wir bezahlen?","Wie suchen wir (Internet, Zeitung)?"]},
+    {"id":"p06","scenario":"Sie möchten zusammen ein Geschenk für Ihren Lehrer/Ihre Lehrerin kaufen.","points":["Was schenken wir?","Wo kaufen wir es?","Wie viel Geld geben wir aus?","Wann überreichen wir das Geschenk?"]},
+    {"id":"p07","scenario":"Sie und Ihr Partner möchten zusammen kochen und Freunde einladen.","points":["Was kochen wir?","Wer kauft die Zutaten ein?","Wann laden wir die Freunde ein?","Wer macht was (kochen, aufräumen)?"]},
+    {"id":"p08","scenario":"Sie möchten zusammen einen Flohmarkt besuchen.","points":["Wann gehen wir hin?","Wie kommen wir dorthin?","Was möchten wir kaufen/verkaufen?","Was machen wir danach?"]},
+    {"id":"p09","scenario":"Sie und Ihr Partner möchten zusammen einen Kinoabend planen.","points":["Welchen Film schauen wir?","Wann gehen wir ins Kino?","Essen wir vorher oder nachher?","Wie kommen wir zum Kino?"]},
+    {"id":"p10","scenario":"Sie möchten zusammen einen Sprachpartner-Abend organisieren.","points":["Wo treffen wir uns?","Wann und wie oft?","Wie üben wir (Konversation, Spiele)?","Wen laden wir noch ein?"]},
+    {"id":"p11","scenario":"Sie und Ihr Partner möchten zusammen ein Picknick machen.","points":["Wo machen wir das Picknick?","Wann treffen wir uns?","Was bringen wir zum Essen mit?","Was machen wir dort (Spiele, Sport)?"]},
+    {"id":"p12","scenario":"Sie möchten zusammen einem Freund beim Umzug helfen.","points":["Wann helfen wir?","Was müssen wir mitnehmen?","Wer macht was?","Was machen wir danach als Belohnung?"]},
+    {"id":"p13","scenario":"Sie und Ihr Partner möchten zusammen einen Wochenendtrip planen.","points":["Wohin fahren wir?","Wie reisen wir (Auto, Zug)?","Wo übernachten wir?","Was möchten wir dort machen?"]},
+    {"id":"p14","scenario":"Sie möchten zusammen ein Fest für die Nachbarn organisieren.","points":["Wann machen wir das Fest?","Was brauchen wir (Essen, Getränke, Musik)?","Wie informieren wir die Nachbarn?","Wer ist verantwortlich für was?"]},
+    {"id":"p15","scenario":"Sie und Ihr Partner möchten zusammen einen Tanzkurs besuchen.","points":["Welchen Tanz lernen wir?","Wo gibt es einen Kurs?","Wie oft und wann findet der Kurs statt?","Was kostet der Kurs?"]}
+  ],
+  "redemittel": {
+    "teil2_intro": ["Das Thema meiner Präsentation ist...", "Heute möchte ich über das Thema ... sprechen.", "In meiner Präsentation geht es um..."],
+    "teil2_experience": ["Ich persönlich habe die Erfahrung gemacht, dass...", "Aus meiner eigenen Erfahrung kann ich sagen, dass...", "In meinem Alltag..."],
+    "teil2_advantages": ["Ein Vorteil ist, dass...", "Positiv finde ich, dass...", "Ein wichtiger Aspekt ist...", "Außerdem..."],
+    "teil2_disadvantages": ["Andererseits gibt es auch Nachteile.", "Ein Nachteil ist, dass...", "Negativ finde ich, dass...", "Man muss aber auch bedenken, dass..."],
+    "teil2_homeland": ["In meinem Heimatland ist die Situation so, dass...", "Bei uns ist es üblich, dass...", "Im Vergleich zu Deutschland..."],
+    "teil2_conclusion": ["Zusammenfassend möchte ich sagen, dass...", "Abschließend denke ich, dass...", "Meiner Meinung nach...", "Vielen Dank für Ihre Aufmerksamkeit."],
+    "teil3_suggesting": ["Ich schlage vor, dass wir...", "Wie wäre es, wenn wir...?", "Wir könnten...", "Was hältst du davon, wenn wir...?"],
+    "teil3_agreeing": ["Das finde ich eine gute Idee!", "Einverstanden!", "Das klingt gut.", "Ja, das machen wir so."],
+    "teil3_disagreeing": ["Das finde ich nicht so gut, weil...", "Ich bin nicht sicher, ob das eine gute Idee ist.", "Vielleicht sollten wir lieber...", "Ich hätte einen anderen Vorschlag:"],
+    "teil3_asking": ["Was meinst du?", "Hast du eine Idee?", "Was schlägst du vor?", "Bist du einverstanden?"]
+  },
+  "teil1_script": {
+    "questions": ["Wie heißen Sie?", "Woher kommen Sie?", "Wo wohnen Sie jetzt?", "Was machen Sie beruflich?", "Was sind Ihre Hobbys?", "Warum lernen Sie Deutsch?", "Haben Sie Familie?"],
+    "templates": ["Ich heiße [Name].", "Ich komme aus [Land].", "Ich wohne seit [Zeit] in [Stadt].", "Ich arbeite als [Beruf] bei [Firma]. / Ich bin [Beruf] von Beruf.", "In meiner Freizeit [Verb] ich gern [Aktivität].", "Ich lerne Deutsch, weil [Grund].", "Ich bin verheiratet/ledig und habe [Anzahl] Kinder. / Ich habe keine Kinder."]
+  }
+}
